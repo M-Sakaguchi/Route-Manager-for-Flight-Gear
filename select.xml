@@ -1,89 +1,91 @@
 <?xml version="1.0"?>
 
 <PropertyList>
-	<name>select</name>
-	<layout>vbox</layout>
-	<resizable>true</resizable>
-	<default-padding>3</default-padding>
+    <name>select</name>
+    <layout>vbox</layout>
+    <resizable>true</resizable>
+    <default-padding>3</default-padding>
 
-	<group>
-		<layout>hbox</layout>
-		<default-padding>1</default-padding>
+    <group>
+        <layout>hbox</layout>
+        <default-padding>1</default-padding>
 
-		<empty>
-			<stretch>true</stretch>
-		</empty>
+        <empty>
+            <stretch>true</stretch>
+        </empty>
 
-		<text>
-			<label>Select</label>
-		</text>
+        <text>
+            <label>Select</label>
+        </text>
 
-		<empty>
-			<stretch>true</stretch>
-		</empty>
+        <empty>
+            <stretch>true</stretch>
+        </empty>
 
-		<button>
-			<legend/>
-			<key>Esc</key>
-			<pref-width>16</pref-width>
-			<pref-height>16</pref-height>
-			<border>2</border>
-			<binding>
-				<command>dialog-close</command>
-			</binding>
-		</button>
-	</group>
+        <button>
+            <legend/>
+            <key>Esc</key>
+            <pref-width>16</pref-width>
+            <pref-height>16</pref-height>
+            <border>2</border>
+            <binding>
+                <command>dialog-close</command>
+            </binding>
+        </button>
+    </group>
 
-	<hrule/>
+    <hrule/>
 
-	<list>
-		<name>select-list</name>
-		<pref-width>200</pref-width>
-		<pref-height>250</pref-height>
-		<halign>fill</halign>
-		<valign>fill</valign>
-		<stretch>true</stretch>
-		<property>/sim/gui/dialogs/select/selected</property>
-		<properties>/sim/gui/dialogs/select/list</properties>
-		<binding>
-			<command>dialog-apply</command>
-			<object-name>select-list</object-name>
-		</binding>
-		<binding>
-			<command>nasal</command>
-			<script>select()</script>
-		</binding>
-	</list>
+    <list>
+        <name>select-list</name>
+        <pref-width>200</pref-width>
+        <pref-height>250</pref-height>
+        <halign>fill</halign>
+        <valign>fill</valign>
+        <stretch>true</stretch>
+        <property>/sim/gui/dialogs/select/selected</property>
+        <properties>/sim/gui/dialogs/select/list</properties>
+        <binding>
+            <command>dialog-apply</command>
+            <object-name>select-list</object-name>
+        </binding>
+        <binding>
+            <command>nasal</command>
+            <script>select()</script>
+        </binding>
+    </list>
 
-	<nasal>
-		<open>
-			var mode = {
-				SID: "departure/sid",
-				STAR: "destination/star"
-			};
+    <nasal>
+        <open>
+         <![CDATA[
+            var mode = {
+                SID: "departure/sid",
+                STAR: "destination/star"
+            };
 
-			var self = props.globals.getNode("/sim/gui/dialogs/select", 1);
-			var propaty = props.globals.getNode("/autopilot/route-manager/", 1);
-			var terget = self.getValue("terget");
-			var selected = self.getNode("selected", 1);
-			var prop_node = propaty.getNode(mode[terget], 1);
+            var self = props.globals.getNode("/sim/gui/dialogs/select", 1);
+            var propaty = props.globals.getNode("/autopilot/route-manager/", 1);
+            var terget = self.getValue("terget");
+            var selected = self.getNode("selected", 1);
+            var prop_node = propaty.getNode(mode[terget], 1);
 
-			var select = func {
-				prop_node.setValue(selected.getValue());
-			}
+            var select = func {
+                prop_node.setValue(selected.getValue());
+            }
 
-			var L = setlistener(self.getNode("terget").getPath(), func {
-				if (cmdarg().getValue() != terget) {
-					prop_node = propaty.getNode(mode[terget], 1);
-				}
+            var L = setlistener(self.getNode("terget").getPath(), func {
+                if (cmdarg().getValue() != terget) {
+                    prop_node = propaty.getNode(mode[terget], 1);
+                }
 
-				gui.display_apply('select-list');
-			}, 1, 0);
-		</open>
+                gui.display_apply('select-list');
+            }, 1, 0);
+         ]]>
+        </open>
 
-		<close>
-			self.getNode("list").removeAllChildren();
-			removelistener(L);
-		</close>
-	</nasal>
+        <close>
+            self.getNode("list").removeAllChildren();
+            removelistener(L);
+        </close>
+    </nasal>
 </PropertyList>
