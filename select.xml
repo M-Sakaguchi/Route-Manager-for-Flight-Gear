@@ -58,34 +58,27 @@
     <nasal>
         <open>
          <![CDATA[
-            var mode = {
-                SID: "departure/sid",
-                STAR: "destination/star"
-            };
-
             var self = props.globals.getNode("/sim/gui/dialogs/select", 1);
-            var propaty = props.globals.getNode("/autopilot/route-manager/", 1);
+			var propaty = props.globals.getNode("/autopilot/route-manager/", 1);
             var terget = self.getValue("terget");
             var selected = self.getNode("selected", 1);
-            var prop_node = propaty.getNode(mode[terget], 1);
 
             var select = func {
-                prop_node.setValue(selected.getValue());
+				var path = self.getValue("property");
+                propaty.setValue(path, selected.getValue());
+				#gui.dialog_apply("route-manager", terget);
             }
 
-            var L = setlistener(self.getNode("terget").getPath(), func {
-                if (cmdarg().getValue() != terget) {
-                    prop_node = propaty.getNode(mode[terget], 1);
-                }
-
-                gui.display_apply('select-list');
-            }, 1, 0);
+            #var L = setlistener(self.getNode("terget").getPath(), func {
+			#	gui.dialog_update('select-list');
+			#	gui.display_apply('select-list');
+            #}, 1, 0);
          ]]>
         </open>
 
         <close>
             self.getNode("list").removeAllChildren();
-            removelistener(L);
+            #removelistener(L);
         </close>
     </nasal>
 </PropertyList>

@@ -225,16 +225,17 @@ command interface /autopilot/route-manager/input:
             # Choosing SID and STAR.
             var sel_dialog = dlg.getNode("flag", 1);
             var sel = props.globals.getNode("/sim/gui/dialogs/select", 1);
+            var sel_state = 0;
             var mode = {
-                SID: "departure/sid",
-                STAR: "destination/star"
+                sid: {source: sids, path: "departure/sid"},
+                star: {source: stars, path: "destination/star"}
             };
 
             var sel_list = sel.getNode("list", 1);
 
             var selectDialog = func(m) {
                 # Managment flag in the Route Manager.
-                var flag = (m == "SID");
+                var flag = (m == "sid");
 
                 sel_dialog.setBoolValue("sid", flag);
                 sel_dialog.setBoolValue("star", !flag);
@@ -245,11 +246,18 @@ command interface /autopilot/route-manager/input:
                 sel_list.removeAllChildren();
                 if (flag) {
                     props.copy(sids, sel_list);
+					sel.setValue("property", mode.sid.path);
                 } else {
                     props.copy(stars, sel_list);
+					sel.setValue("property", mode.star.path);
                 }#if - else
 
-                gui.showDialog('select');
+				if (sel_state) {
+					gui.dialog_update('select', 'select-list');
+				} else {
+					gui.showDialog('select');
+					sel_state = 1;
+				}
             }#selectDialog
 
             var initPosition = func {
@@ -385,7 +393,7 @@ command interface /autopilot/route-manager/input:
             <live>true</live>
             <binding>
                 <command>nasal</command>
-                <script>selectDialog("SID");</script>
+                <script>selectDialog("sid");</script>
             </binding>
         </radio>
         <text>
@@ -493,7 +501,7 @@ command interface /autopilot/route-manager/input:
             <live>true</live>
             <binding>
                 <command>nasal</command>
-                <script>selectDialog("STAR");</script>
+                <script>selectDialog("star");</script>
             </binding>
         </radio>
         <text>
